@@ -42,9 +42,7 @@ public class hiddenValue : MonoBehaviour {
 
 		new int[2]{320, 40},
 		new int[2]{320, 20},
-		new int[2]{320, 340},
-		new int[2]{320, 320}
-
+		new int[2]{320, 340}
 	};
 	private string[][] chart =
 	{
@@ -117,7 +115,7 @@ public class hiddenValue : MonoBehaviour {
 				}
             }
 			positions = temp;
-			if (numbers[aa] == (snnums[1] - '0' - 1) && numbers[aa] != 9)
+			if (numbers[aa] == ((snnums[1] - '0') - 1))
 			{
 				if (UnityEngine.Random.Range(0, 2) == 0)
 					numbers[aa] = 0;
@@ -136,7 +134,7 @@ public class hiddenValue : MonoBehaviour {
 			else if (numbers[aa] == 9)
 				hingeTimes[numbers[aa] - 1] = hingeTimes[numbers[aa] - 1] + "" + chart["RGWYMCP".IndexOf(numberColors[aa])][5];
 			else
-				hingeTimes[snnums[1] - '0' - 1] = hingeTimes[snnums[1] - '0' - 1] + "" + chart["RGWYMCP".IndexOf(numberColors[aa])][6];
+				hingeTimes[(snnums[1] - '0') - 2] = hingeTimes[(snnums[1] - '0') - 1] + "" + chart["RGWYMCP".IndexOf(numberColors[aa])][6];
 		}
 		for(int aa = 0; aa < hingeTimes.Length; aa++)
         {
@@ -289,7 +287,6 @@ public class hiddenValue : MonoBehaviour {
 				//Press
 				hingeMesh[hn].transform.localScale = new Vector3(0, 0, 0);
 				numValues--;
-
 			}
 			if (numValues == 0)
 			{
@@ -383,27 +380,32 @@ public class hiddenValue : MonoBehaviour {
 		module.HandlePass();
 	}
 #pragma warning disable 414
-	private readonly string TwitchHelpMessage = @"!{0} set 9 7 1 sets the 1st, 2nd, and 3rd dials to 9, 7, and 1. !{0} submit 5 presses the submit button when the countdown timer's last digit is a 5.";
+	private readonly string TwitchHelpMessage = @"!{0} cycle cycles through all the numbers. !{0} press 2 at 4 presses the 2nd hinge when the last digit in the countdown timer is a 4.";
 #pragma warning restore 414
 	IEnumerator ProcessTwitchCommand(string command)
 	{
 		string[] param = command.Split(' ');
 		bool flag = true;
-		if (Regex.IsMatch(param[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && Regex.IsMatch(param[2], @"^\s*at\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && param.Length == 4)
+		if(param.Length == 4)
 		{
-			if ("12345678".IndexOf(param[1]) >= 0 && param[1].Length == 1 && "0123456789".IndexOf(param[3]) >= 0 && param[3].Length == 1)
+			if (Regex.IsMatch(param[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && Regex.IsMatch(param[2], @"^\s*at\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && param.Length == 4)
 			{
-				flag = false;
-				int timepress = "0123456789".IndexOf(param[3]);
-				while (((int)(bomb.GetTime())) % 10 != timepress)
-					yield return "trycancel The button was not pressed due to a request to cancel.";
-				hinges["12345678".IndexOf(param[1])].OnInteract();
-				yield return new WaitForSeconds(0.1f);
+				if ("12345678".IndexOf(param[1]) >= 0 && param[1].Length == 1 && "0123456789".IndexOf(param[3]) >= 0 && param[3].Length == 1)
+				{
+					flag = false;
+					int timepress = "0123456789".IndexOf(param[3]);
+					while (((int)(bomb.GetTime())) % 10 != timepress)
+						yield return "trycancel The button was not pressed due to a request to cancel.";
+					hinges["12345678".IndexOf(param[1])].OnInteract();
+					yield return new WaitForSeconds(0.1f);
+				}
 			}
 		}
+		
 		if (Regex.IsMatch(param[0], @"^\s*cycle\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
 		{
 			yield return null;
+			flag = false;
 			for (int aa = 0; aa < numbers.Length; aa++)
             {
 				switch (numbers[aa])
