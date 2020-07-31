@@ -36,7 +36,6 @@ public class hiddenValue : MonoBehaviour {
 		new int[2]{20, 320},
 
 		new int[2]{340, 40},
-		new int[2]{340, 20},
 		new int[2]{340, 340},
 		new int[2]{340, 320},
 
@@ -248,9 +247,9 @@ public class hiddenValue : MonoBehaviour {
     {
 		if(!moduleSolved)
         {
+			int lastSecond = (int)(bomb.GetTime() % 10);
 			hinges[hn].AddInteractionPunch();
 			audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-			int lastSecond = (int)(bomb.GetTime() % 10);
 			bool incorrect = true;
 			if (hingeTimes[hn].Equals("") && !(hingeTimes[8].Equals("")))
 			{
@@ -279,6 +278,7 @@ public class hiddenValue : MonoBehaviour {
 			if (incorrect)
 			{
 				//Strike
+				Debug.LogFormat("[The Hidden Value #{0}] Incorrect! You pressed hinge #{1} at {2}", moduleId, hn + 1, lastSecond);
 				audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.Strike, transform);
 				module.HandleStrike();
 			}
@@ -296,6 +296,7 @@ public class hiddenValue : MonoBehaviour {
 			}
 		}
 	}
+	
 	IEnumerator animation()
     {
 		modulePlate.transform.localRotation = new Quaternion(0, 0, 0, -1f);
@@ -394,6 +395,7 @@ public class hiddenValue : MonoBehaviour {
 				{
 					flag = false;
 					int timepress = "0123456789".IndexOf(param[3]);
+					yield return null;
 					while (((int)(bomb.GetTime())) % 10 != timepress)
 						yield return "trycancel The button was not pressed due to a request to cancel.";
 					hinges["12345678".IndexOf(param[1])].OnInteract();
