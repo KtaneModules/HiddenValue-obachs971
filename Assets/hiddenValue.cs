@@ -37,7 +37,6 @@ public class hiddenValue : MonoBehaviour {
 
 		new int[2]{340, 40},
 		new int[2]{340, 340},
-		new int[2]{340, 320},
 
 		new int[2]{320, 40},
 		new int[2]{320, 20},
