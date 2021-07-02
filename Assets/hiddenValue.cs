@@ -22,25 +22,38 @@ public class hiddenValue : MonoBehaviour {
 	public AudioClip solveSound;
 	static int moduleIdCounter = 1;
 	int moduleId;
-	
+
 	private int[][] positions =
 	{
-		new int[2]{40, 40},
-		new int[2]{40, 20},
-		new int[2]{40, 340},
-		new int[2]{40, 320},
+		new int[]{ 40, 40 },
+		new int[]{ 40, 60 },
+		new int[]{ 40, 80 },
+		new int[]{ 40, 100 },
+		new int[]{ 40, 120 },
 
-		new int[2]{20, 40},
-		new int[2]{20, 20},
-		new int[2]{20, 340},
-		new int[2]{20, 320},
+		new int[]{ 60, 40 },
+		new int[]{ 60, 60 },
+		new int[]{ 60, 80 },
+		new int[]{ 60, 100 },
+		new int[]{ 60, 120 },
 
-		new int[2]{340, 40},
-		new int[2]{340, 340},
+		new int[]{ 80, 40 },
+		new int[]{ 80, 60 },
+		new int[]{ 80, 80 },
+		new int[]{ 80, 100 },
+		new int[]{ 80, 120 },
 
-		new int[2]{320, 40},
-		new int[2]{320, 20},
-		new int[2]{320, 340}
+		new int[]{ 100, 40 },
+		new int[]{ 100, 60 },
+		new int[]{ 100, 80 },
+		new int[]{ 100, 100 },
+		new int[]{ 100, 120 },
+
+		new int[]{ 120, 40 },
+		new int[]{ 120, 60 },
+		new int[]{ 120, 80 },
+		new int[]{ 120, 100 },
+		new int[]{ 120, 120 }
 	};
 	private string[][] chart =
 	{
@@ -148,9 +161,12 @@ public class hiddenValue : MonoBehaviour {
 		if(!moduleSolved)
         {
 			int cur = -1;
+			var angle = Vector3.Angle(back.transform.up, Camera.main.transform.up);
+			var angle2 = Vector3.Angle(back.transform.up, Camera.main.transform.right);
+			//Debug.LogFormat("[The Hidden Value #{0}] Angle {1}, {2}", moduleId, angle, angle2);
 			for (int aa = 0; aa < numbers.Length; aa++)
 			{
-				if ((int)(back.transform.eulerAngles.x) >= orientations[aa][0] && (int)(back.transform.eulerAngles.x) <= orientations[aa][1] && (int)(back.transform.eulerAngles.z) >= orientations[aa][2] && (int)(back.transform.eulerAngles.z) <= orientations[aa][3])
+				if ((int)(angle) >= orientations[aa][0] && (int)(angle) <= orientations[aa][1] && (int)(angle2) >= orientations[aa][2] && (int)(angle2) <= orientations[aa][3])
 				{
 					cur = aa;
 					break;
