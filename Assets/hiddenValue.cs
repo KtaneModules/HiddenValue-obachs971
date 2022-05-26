@@ -23,37 +23,19 @@ public class hiddenValue : MonoBehaviour {
 	static int moduleIdCounter = 1;
 	int moduleId;
 
-	private int[][] positions =
+	private List<int[]> positions = new List<int[]>()
 	{
-		new int[]{ 40, 40 },
-		new int[]{ 40, 60 },
-		new int[]{ 40, 80 },
-		new int[]{ 40, 100 },
-		new int[]{ 40, 120 },
+		new int[]{ 50, 50 },
+		new int[]{ 50, 90 },
+		new int[]{ 50, 130 },
 
-		new int[]{ 60, 40 },
-		new int[]{ 60, 60 },
-		new int[]{ 60, 80 },
-		new int[]{ 60, 100 },
-		new int[]{ 60, 120 },
+		new int[]{ 90, 50 },
 
-		new int[]{ 80, 40 },
-		new int[]{ 80, 60 },
-		new int[]{ 80, 80 },
-		new int[]{ 80, 100 },
-		new int[]{ 80, 120 },
+		new int[]{ 90, 130 },
 
-		new int[]{ 100, 40 },
-		new int[]{ 100, 60 },
-		new int[]{ 100, 80 },
-		new int[]{ 100, 100 },
-		new int[]{ 100, 120 },
-
-		new int[]{ 120, 40 },
-		new int[]{ 120, 60 },
-		new int[]{ 120, 80 },
-		new int[]{ 120, 100 },
-		new int[]{ 120, 120 }
+		new int[]{ 130, 50 },
+		new int[]{ 130, 90 },
+		new int[]{ 130, 130 }
 	};
 	private string[][] chart =
 	{
@@ -65,11 +47,10 @@ public class hiddenValue : MonoBehaviour {
 		new string[7]{"5", "0", "9", "8", "34", "1", "6"},
 		new string[7]{"68", "34", "7", "5", "5", "3", "2"}
 	};
-	private int[] numbers;
-	private char[] numberColors;
-	private Material[] numberMat;
-	private int[][] orientations;
-	private int numValues;
+	private List<int> numbers = new List<int>();
+	private List<char> numberColors = new List<char>();
+	private List<Material> numberMat = new List<Material>();
+	private List<int[]> orientations = new List<int[]>();
 	private int flips;
 	private string[] hingeTimes = {"", "", "", "", "", "", "", "", ""};
 	private bool moduleSolved;
@@ -89,12 +70,8 @@ public class hiddenValue : MonoBehaviour {
     {
 		moduleSolved = false;
 		flips = -1;
-		numValues = UnityEngine.Random.Range(0, 4) + 3;
-		numbers = new int[numValues];
-		numberColors = new char[numValues];
-		numberMat = new Material[numValues];
-		orientations = new int[numValues][];
-		string numChoice = "123456789";
+		var numValues = UnityEngine.Random.Range(0, 3) + 4;
+		string numChoice = new string("123456789".ToCharArray().Shuffle());
 		string sn = bomb.GetSerialNumber();
 		string snnums = "";
 		for(int aa = 0; aa < sn.Length; aa++)
@@ -104,28 +81,17 @@ public class hiddenValue : MonoBehaviour {
         }
 		for (int aa = 0; aa < numValues; aa++)
         {
-			numbers[aa] = numChoice[UnityEngine.Random.Range(0, numChoice.Length)] - '0';
-			numChoice = numChoice.Replace(numbers[aa] + "", "");
-			numberColors[aa] = "RGWYMCP"[UnityEngine.Random.Range(0, 7)];
-			numberMat[aa] = mats["RGWYMCP".IndexOf(numberColors[aa])];
-			orientations[aa] = new int[4];
-			int num = UnityEngine.Random.Range(0, positions.Length);
-			orientations[aa][0] = positions[num][0] - 9;
-			orientations[aa][1] = positions[num][0] + 9;
-			orientations[aa][2] = positions[num][1] - 9;
-			orientations[aa][3] = positions[num][1] + 9;
+			numbers.Add(numChoice[aa] - '0');
+			numberColors.Add("RGWYMCP"[UnityEngine.Random.Range(0, 7)]);
+			numberMat.Add(mats["RGWYMCP".IndexOf(numberColors[aa])]);
+			orientations.Add(new int[4]);
+			int num = UnityEngine.Random.Range(0, positions.Count);
+			orientations[aa][0] = positions[num][0] - 19;
+			orientations[aa][1] = positions[num][0] + 19;
+			orientations[aa][2] = positions[num][1] - 19;
+			orientations[aa][3] = positions[num][1] + 19;
 			Debug.LogFormat("[The Hidden Value #{0}] Orientation #{1}: {2}, {3}", moduleId, aa + 1, positions[num][0], positions[num][1]);
-			int[][] temp = new int[positions.Length - 1][];
-			int items = 0;
-			for(int bb = 0; bb < positions.Length; bb++)
-            {
-				if(bb != num)
-                {
-					temp[items] = positions[bb];
-					items++;
-				}
-            }
-			positions = temp;
+			positions.RemoveAt(num);
 			if (numbers[aa] == ((snnums[1] - '0') - 1))
 			{
 				if (UnityEngine.Random.Range(0, 2) == 0)
@@ -164,7 +130,7 @@ public class hiddenValue : MonoBehaviour {
 			var angle = Vector3.Angle(back.transform.up, Camera.main.transform.up);
 			var angle2 = Vector3.Angle(back.transform.up, Camera.main.transform.right);
 			//Debug.LogFormat("[The Hidden Value #{0}] Angle {1}, {2}", moduleId, angle, angle2);
-			for (int aa = 0; aa < numbers.Length; aa++)
+			for (int aa = 0; aa < numbers.Count; aa++)
 			{
 				if ((int)(angle) >= orientations[aa][0] && (int)(angle) <= orientations[aa][1] && (int)(angle2) >= orientations[aa][2] && (int)(angle2) <= orientations[aa][3])
 				{
@@ -172,13 +138,11 @@ public class hiddenValue : MonoBehaviour {
 					break;
 				}
 			}
-			//text.text = (int)(back.transform.eulerAngles.x) + ", " + (int)(back.transform.eulerAngles.z);
+			//text.text = (int)(Vector3.Angle(back.transform.up, Camera.main.transform.up)) + ", " + (int)(Vector3.Angle(back.transform.up, Camera.main.transform.right));
 			if (cur != flips)
 			{
 				for (int aa = 0; aa < 7; aa++)
-				{
 					leds[aa].material = mats[7];
-				}
 				if (cur >= 0)
 				{
 					switch (numbers[cur])
@@ -265,32 +229,13 @@ public class hiddenValue : MonoBehaviour {
 			int lastSecond = (int)(bomb.GetTime() % 10);
 			hinges[hn].AddInteractionPunch();
 			audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-			bool incorrect = true;
-			if (hingeTimes[hn].Equals("") && !(hingeTimes[8].Equals("")))
-			{
-				for (int aa = 0; aa < hingeTimes[8].Length; aa++)
-				{
-					if (lastSecond == (hingeTimes[8][aa] - '0'))
-					{
-						incorrect = false;
-						hingeTimes[8] = "";
-						break;
-					}
-				}
-
-			}
-			else
-			{
-				for (int aa = 0; aa < hingeTimes[hn].Length; aa++)
-				{
-					if (lastSecond == (hingeTimes[hn][aa] - '0'))
-					{
-						incorrect = false;
-						break;
-					}
-				}
-			}
-			if (incorrect)
+			var num = -1;
+			if (hingeTimes[hn].Equals("") && !(hingeTimes[8].Equals("")) && hingeTimes[8].Contains(lastSecond + ""))
+					num = 9;
+			else if (hingeTimes[hn].Contains(lastSecond + ""))
+				num = hn + 1;
+			
+			if (num == -1)
 			{
 				//Strike
 				Debug.LogFormat("[The Hidden Value #{0}] Incorrect! You pressed hinge #{1} at {2}", moduleId, hn + 1, lastSecond);
@@ -301,11 +246,20 @@ public class hiddenValue : MonoBehaviour {
 			{
 				//Press
 				hingeMesh[hn].transform.localScale = new Vector3(0, 0, 0);
-				numValues--;
+				hingeTimes[num - 1] = "";
+				num = numbers.IndexOf(num);
+				if (num == -1)
+					num = numbers.IndexOf(0);
+				numbers.RemoveAt(num);
+				numberColors.RemoveAt(num);
+				numberMat.RemoveAt(num);
+				orientations.RemoveAt(num);
 			}
-			if (numValues == 0)
+			if (numbers.Count == 0)
 			{
 				//Solved
+				for (int aa = 0; aa < 7; aa++)
+					leds[aa].material = mats[7];
 				moduleSolved = true;
 				StartCoroutine(animation());
 			}
@@ -423,7 +377,7 @@ public class hiddenValue : MonoBehaviour {
 		{
 			yield return null;
 			flag = false;
-			for (int aa = 0; aa < numbers.Length; aa++)
+			for (int aa = 0; aa < numbers.Count; aa++)
             {
 				switch (numbers[aa])
 				{
